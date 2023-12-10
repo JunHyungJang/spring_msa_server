@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/user-service")
+@RequestMapping("/")
 @Slf4j
 public class UserController {
 
@@ -39,10 +39,16 @@ public class UserController {
     }
 
 
-    @GetMapping("/user-service/health_check")
+    @GetMapping("/health_check")
     public String status(){
 
-        return String.format("It's working in user service on port %s,",env.getProperty("local.server.port"));
+        return String.format("It's working in user service on port"
+        + ", port(local.server.port)=" + env.getProperty("local.server.port")
+        + ", port(server.port)=" + env.getProperty("server.port")
+        + ", token secret=" + env.getProperty("token.secret")
+        + ", token expiration type =" + env.getProperty("token.expiration_time")
+
+        );
     }
     @GetMapping("/welcome")
     public String welcome(){
@@ -54,6 +60,7 @@ public class UserController {
     public ResponseEntity<ResponseUser> createUser(@RequestBody RequestUser user) {
         ModelMapper mapper = new ModelMapper();
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+
         UserDto userDto = mapper.map(user, UserDto.class);
         userService.createUser(userDto);
 

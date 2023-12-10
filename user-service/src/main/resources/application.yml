@@ -1,5 +1,5 @@
 server:
-  port: 0
+  port: 8887
 
 spring:
   application:
@@ -11,6 +11,8 @@ spring:
     hibernate:
       ddl-auto: create-drop
     show-sql: true
+    generate-ddl: true
+    defer-datasource-initialization: true
   h2:
     console:
       enabled: true
@@ -28,3 +30,10 @@ eureka:
 
 greeting:
   message: Welcome to the simple E-commerce
+logging:
+  level:
+    com.example.userservice: DEBUG
+
+token:
+  expiration_time: 86400000
+  secret: user_token
