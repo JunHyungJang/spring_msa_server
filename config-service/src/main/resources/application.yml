@@ -8,4 +8,5 @@ spring:
     config:
       server:
         git:
-          uri: file://C:\Users\WINDOWS\IdeaProjects\msa_project\git-local-repo
+#          uri: file://C:\Users\WINDOWS\IdeaProjects\msa_project\git-local-repo
+          uri: 
