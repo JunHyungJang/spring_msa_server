@@ -50,8 +50,9 @@ public class WebSecurity {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> {
-                    request.
-                            requestMatchers(antMatcher("/**")).permitAll()
+                    request
+                            .requestMatchers(antMatcher("/actuator/**")).permitAll()
+                            .requestMatchers(antMatcher("/**")).permitAll()
                             .requestMatchers(PathRequest.toH2Console()).permitAll()
                             .requestMatchers(PathRequest.toH2Console()).permitAll()
                             .requestMatchers(new IpAddressMatcher("127.0.0.1")).permitAll()
