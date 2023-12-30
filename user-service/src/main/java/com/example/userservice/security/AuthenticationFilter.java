@@ -30,13 +30,11 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final UserService userService;
     private final Environment env;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     public AuthenticationFilter(AuthenticationManager authenticationManager, UserService userService, Environment env,BCryptPasswordEncoder bCryptPasswordEncoder) {
         super.setAuthenticationManager(authenticationManager);
         this.userService = userService;
         this.env = env;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
     @Override

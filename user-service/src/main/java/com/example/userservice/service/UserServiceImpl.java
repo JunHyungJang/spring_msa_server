@@ -2,20 +2,29 @@ package com.example.userservice.service;
 
 
 import com.example.userservice.Dto.UserDto;
+import com.example.userservice.client.OrderServiceClient;
 import com.example.userservice.jpa.UserEntity;
 import com.example.userservice.jpa.UserRepository;
 import com.example.userservice.vo.ResponseOrder;
+import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+//import org.springframework.retry.annotation.CircuitBreaker;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
+import org.springframework.web.client.RestTemplate;
 //import org.modelmapper.
 //import org.springframework.stereotype.Service;
 
@@ -32,10 +41,18 @@ public class UserServiceImpl implements UserService {
     BCryptPasswordEncoder passwordEncoder;
     Environment env;
 
-    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, Environment env) {
+    RestTemplate restTemplate;
+    OrderServiceClient orderServiceClient;
+
+    CircuitBreakerFactory circuitBreakerFactory;
+
+    public UserServiceImpl(CircuitBreakerFactory circuitBreakerFactory,UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, Environment env, RestTemplate restTemplate,OrderServiceClient orderServiceClient) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.env = env;
+        this.restTemplate = restTemplate;
+        this.orderServiceClient = orderServiceClient;
+        this.circuitBreakerFactory = circuitBreakerFactory;
     }
 
     @Override
@@ -61,8 +78,27 @@ public class UserServiceImpl implements UserService {
             log.info("NO user name");
         }
         UserDto userDto = new ModelMapper().map(userEntity,UserDto.class);
-        List<ResponseOrder> orders = new ArrayList<>();
-        userDto.setOrders(orders);
+        //Resttemplate
+//        List<ResponseOrder> orders = new ArrayList<>();
+//        String orderUrl = String.format(env.getProperty("order_service.url"),userId);
+//        ResponseEntity<List<ResponseOrder>> orderResponse = restTemplate.exchange(orderUrl, HttpMethod.GET, null,
+//                new ParameterizedTypeReference<List<ResponseOrder>>() {
+//        });
+//        List<ResponseOrder> orderList = orderResponse.getBody();
+
+        //using Feign Client
+//        List<ResponseOrder> orderList = null;
+//        try {
+//            orderList = orderServiceClient.getOrders(userId);
+//        }catch (FeignException ex){
+//            log.error(ex.getMessage());
+//        }
+//        List<ResponseOrder> orderList = orderServiceClient.getOrders(userId);
+        CircuitBreaker circuitBreaker = (CircuitBreaker) circuitBreakerFactory.create("circuitbreaker");
+        List<ResponseOrder> orderList = circuitBreaker.run(()->orderServiceClient.getOrders(userId),
+                throwable -> new ArrayList<>( ));
+
+        userDto.setOrders(orderList);
         return userDto;
     }
 

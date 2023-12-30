@@ -5,8 +5,12 @@ spring:
   application:
     name: order-service
   datasource:
-    url: jdbc:h2:mem:testdb
-    username: sa
+#    driver-class-name:org.h2.driver
+#    url:jdbc:h2:mem:testdb
+    url: jdbc:mariadb://localhost:3307/mydb
+    username: root
+    driver-class-name: org.mariadb.jdbc.Driver
+    password: kevin0459
   jpa:
     hibernate:
       ddl-auto: update
@@ -36,3 +40,8 @@ eureka:
 logging:
   level:
     com.exmaple.orderservice: DEBUG
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, httptrace,info,metrics,prometheus

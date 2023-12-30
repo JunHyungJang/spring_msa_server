@@ -1,6 +1,7 @@
 encrypt:
 #  key: abce1234
   key-store:
-    location: file:///C:\Users\WINDOWS\IdeaProjects\keystore\apiEncryptionKey.jks
+#    location: file:///C:\Users\WINDOWS\IdeaProjects\keystore\apiEncryptionKey.jks
+    location: file:/apiEncryption.jks
     password: test1234
     alias: apiEncryptionKey

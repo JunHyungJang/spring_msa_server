@@ -6,6 +6,7 @@ import com.example.userservice.jpa.UserEntity;
 import com.example.userservice.vo.Greeting;
 import com.example.userservice.vo.RequestUser;
 import com.example.userservice.vo.ResponseUser;
+import io.micrometer.core.annotation.Timed;
 import jakarta.ws.rs.Path;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -40,6 +41,7 @@ public class UserController {
 
 
     @GetMapping("/health_check")
+    @Timed(value="users.status",longTask = true)
     public String status(){
 
         return String.format("It's working in user service on port"
@@ -51,6 +53,8 @@ public class UserController {
         );
     }
     @GetMapping("/welcome")
+    @Timed(value="users.welcome",longTask = true)
+
     public String welcome(){
 //        return env.getProperty("greeting.message");
         return greeting.getMessage();

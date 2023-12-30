@@ -1,5 +1,5 @@
 server:
-  port: 0
+  port: 8999
 
 spring:
   application:
@@ -10,15 +10,15 @@ spring:
     username: guest
     password: guest
 
-#  datasource:
-#    url: jdbc:h2:mem:testdb
-#    username: sa
-  jpa:
-    hibernate:
-      ddl-auto: create-drop
-    show-sql: true
-    generate-ddl: true
-    defer-datasource-initialization: true
+  datasource:
+    url: jdbc:h2:mem:testdb
+    username: sa
+#  jpa:
+#    hibernate:
+#      ddl-auto: create-drop
+#    show-sql: true
+#    generate-ddl: true
+#    defer-datasource-initialization: true
   h2:
     console:
       enabled: true
@@ -38,7 +38,7 @@ greeting:
   message: Welcome to the simple E-commerce
 logging:
   level:
-    com.example.userservice: DEBUG
+    com.example.userservice.client: DEBUG
 
 management:
   endpoints:
