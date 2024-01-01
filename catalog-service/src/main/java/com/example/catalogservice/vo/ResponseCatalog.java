@@ -9,9 +9,8 @@ import java.util.Date;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ResponseCatalog {
     private String productId;
-    private Integer qty;
+    private String productName;
     private Integer unitPrice;
-    private Integer totalPrice;
+    private Integer stock;
     private Date createdAt;
-
 }

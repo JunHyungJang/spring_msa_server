@@ -12,9 +12,9 @@ spring:
         native:
           search-locations: file:///C:\Users\WINDOWS\IdeaProjects\git-native-repo
         git:
-          uri: file://C:\Users\WINDOWS\IdeaProjects\git-local-config
-#          uri: https://github.com/JunHyungJang/spring_msa_server/tree/main/git-local-repo
-
+#          uri: file://C:\Users\WINDOWS\IdeaProjects\git-local-config
+          uri: https://github.com/JunHyungJang/msa_server_config_repo
+#
   rabbitmq:
     host: 127.0.0.1
     port: 5672

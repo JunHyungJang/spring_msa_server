@@ -37,7 +37,7 @@ public class CatalogController {
     }
 
     @GetMapping("/catalogs")
-    public ResponseEntity<List<ResponseCatalog>> getUsers() {
+    public ResponseEntity<List<ResponseCatalog>> getCatalogs() {
         Iterable<CatalogEntity> catalogList = catalogService.getAllCatalogs();
 //        log.info("helloword");
 
@@ -45,6 +45,7 @@ public class CatalogController {
         catalogList.forEach(v -> {
             result.add(new ModelMapper().map(v,ResponseCatalog.class));
         });
+//        log.info(catalogLis);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
