@@ -44,7 +44,10 @@ public class OrderController {
         log.info("Server Port ={}",request.getServerPort());
         return String.format("Hi, there. This is a message from First service %s .",env.getProperty("local.server.port"));
     }
-
+    @GetMapping("/feigntest")
+    public String feigntest() {
+        return "feigntest";
+    }
     @PostMapping("/{userId}/orders")
     public ResponseEntity<ResponseOrder> createOrder(@PathVariable("userId") String userId, @RequestBody RequestOrder orderDetails)
     {
@@ -62,7 +65,7 @@ public class OrderController {
 //        orderDto.setOrderId(UUID.randomUUID().toString());
 //        orderDto.setTotalPrice(orderDto.getUnitPrice()*orderDto.getQty());
         kafkaProducer.send("example-catalog-topic",orderDto);
-//        orderProducer.send("orders",orderDto);
+        orderProducer.send("orders",orderDto);
 
 //        ResponseOrder responseOrder = mapper.map(orderDto,ResponseOrder.class);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseOrder);

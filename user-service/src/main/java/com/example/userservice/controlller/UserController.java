@@ -60,6 +60,13 @@ public class UserController {
         return greeting.getMessage();
     }
 
+    @GetMapping("/user-feign-test")
+    public String user_feign_test() {
+        String answer = userService.user_feign_test_impl();
+
+        return answer;
+    }
+
     @PostMapping("/users")
     public ResponseEntity<ResponseUser> createUser(@RequestBody RequestUser user) {
         ModelMapper mapper = new ModelMapper();

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,10 @@ public class KafkaProducer {
     @Autowired
     public KafkaProducer(KafkaTemplate<String, String> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
+    }
+    @KafkaListener(topics="example-catalog-topic")
+    public void updateQty(String kafkaMessage) {
+        log.info("Kafka Message -> " + kafkaMessage);
     }
 
     public OrderDto send(String topic, OrderDto orderDto) {

@@ -46,7 +46,7 @@ public class UserServiceImpl implements UserService {
 
     CircuitBreakerFactory circuitBreakerFactory;
 
-    public UserServiceImpl(CircuitBreakerFactory circuitBreakerFactory,UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, Environment env, RestTemplate restTemplate,OrderServiceClient orderServiceClient) {
+    public UserServiceImpl(CircuitBreakerFactory circuitBreakerFactory, UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, Environment env, RestTemplate restTemplate, OrderServiceClient orderServiceClient) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.env = env;
@@ -77,7 +77,7 @@ public class UserServiceImpl implements UserService {
         if (userEntity == null) {
             log.info("NO user name");
         }
-        UserDto userDto = new ModelMapper().map(userEntity,UserDto.class);
+        UserDto userDto = new ModelMapper().map(userEntity, UserDto.class);
         //Resttemplate
 //        List<ResponseOrder> orders = new ArrayList<>();
 //        String orderUrl = String.format(env.getProperty("order_service.url"),userId);
@@ -95,12 +95,13 @@ public class UserServiceImpl implements UserService {
 //        }
 //        List<ResponseOrder> orderList = orderServiceClient.getOrders(userId);
         CircuitBreaker circuitBreaker = (CircuitBreaker) circuitBreakerFactory.create("circuitbreaker");
-        List<ResponseOrder> orderList = circuitBreaker.run(()->orderServiceClient.getOrders(userId),
-                throwable -> new ArrayList<>( ));
+        List<ResponseOrder> orderList = circuitBreaker.run(() -> orderServiceClient.getOrders(userId),
+                throwable -> new ArrayList<>());
 
         userDto.setOrders(orderList);
         return userDto;
     }
+
 
     @Override
     public Iterable<UserEntity> getUserbyAll() {
@@ -115,8 +116,8 @@ public class UserServiceImpl implements UserService {
             throw new UsernameNotFoundException(username);
         }
 //        log.info(userEntity.getEmail());
-        return new User(userEntity.getEmail(),userEntity.getEncryptedpwd(),
-                true,true,true,true,new ArrayList<>());
+        return new User(userEntity.getEmail(), userEntity.getEncryptedpwd(),
+                true, true, true, true, new ArrayList<>());
     }
 
     @Override
@@ -125,7 +126,16 @@ public class UserServiceImpl implements UserService {
         if (userEntity == null) {
             throw new UsernameNotFoundException(email);
         }
-        UserDto userDto = new ModelMapper().map(userEntity,UserDto.class);
+        UserDto userDto = new ModelMapper().map(userEntity, UserDto.class);
         return userDto;
+    }
+
+    @Override
+    public String user_feign_test_impl() {
+        CircuitBreaker circuitBreaker = (CircuitBreaker) circuitBreakerFactory.create("circuitbreaker");
+        String answer = circuitBreaker.run(() -> orderServiceClient.test1());
+
+        return answer;
+
     }
 }
