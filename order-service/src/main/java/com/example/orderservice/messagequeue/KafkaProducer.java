@@ -9,6 +9,8 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.Random;
+
 @Service
 @Slf4j
 public class KafkaProducer {
@@ -17,10 +19,6 @@ public class KafkaProducer {
     @Autowired
     public KafkaProducer(KafkaTemplate<String, String> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
-    }
-    @KafkaListener(topics="example-catalog-topic")
-    public void updateQty(String kafkaMessage) {
-        log.info("Kafka Message -> " + kafkaMessage);
     }
 
     public OrderDto send(String topic, OrderDto orderDto) {
@@ -33,8 +31,8 @@ public class KafkaProducer {
             log.info("json error");
             ex.printStackTrace();
         }
-
-        kafkaTemplate.send(topic, jsonInString);
+        log.info(jsonInString);
+        kafkaTemplate.send(topic,"random",jsonInString);
         log.info("Kafka Producer sent data from the Order microservice: " + orderDto);
 
         return orderDto;

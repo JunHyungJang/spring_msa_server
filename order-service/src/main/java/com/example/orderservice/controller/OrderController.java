@@ -51,6 +51,7 @@ public class OrderController {
     @PostMapping("/{userId}/orders")
     public ResponseEntity<ResponseOrder> createOrder(@PathVariable("userId") String userId, @RequestBody RequestOrder orderDetails)
     {
+        log.info("Controller is working");
         ModelMapper mapper = new ModelMapper();
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
@@ -59,13 +60,14 @@ public class OrderController {
         orderDto.setUserId(userId);
         OrderDto createOrder = orderService.createOrder(orderDto);
         ResponseOrder responseOrder = mapper.map(createOrder, ResponseOrder.class);
+        log.info(orderDto.getOrderId(),orderDto.getQty(),orderDto.getUnitPrice());
 //
         //Send this order to Kafka
 
 //        orderDto.setOrderId(UUID.randomUUID().toString());
 //        orderDto.setTotalPrice(orderDto.getUnitPrice()*orderDto.getQty());
         kafkaProducer.send("example-catalog-topic",orderDto);
-        orderProducer.send("orders",orderDto);
+//        orderProducer.send("orders",orderDto);
 
 //        ResponseOrder responseOrder = mapper.map(orderDto,ResponseOrder.class);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseOrder);
