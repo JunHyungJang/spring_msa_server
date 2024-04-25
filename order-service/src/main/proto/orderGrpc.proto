@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package =  "com.jun.models";
+
+message OrderRequest {
+  string userId = 1;
+}
+
+message OrderObject {
+  int64 id  = 1;
+  int32 qty = 2;
+  int32 unitPrice = 3;
+  int32 totalPrice = 4;
+  string userId = 5;
+  string orderId = 6;
+}
+
+message OrderResponse {
+  repeated OrderObject OrderObjects =1;
+}
+
+
+
+
+service OrderServiceGrpc {
+  rpc getOrdersById(OrderRequest) returns (OrderResponse);
+  //unary
+//  rpc withdraw(WithdrawRequest) returns (stream Money);
+
+}

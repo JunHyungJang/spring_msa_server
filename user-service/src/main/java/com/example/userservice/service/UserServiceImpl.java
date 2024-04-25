@@ -71,6 +71,7 @@ public class UserServiceImpl implements UserService {
         return returnUserDto;
     }
 
+
     @Override
     public UserDto getUserbyId(String userId) {
         UserEntity userEntity = userRepository.findByUserId(userId);
@@ -78,22 +79,7 @@ public class UserServiceImpl implements UserService {
             log.info("NO user name");
         }
         UserDto userDto = new ModelMapper().map(userEntity, UserDto.class);
-        //Resttemplate
-//        List<ResponseOrder> orders = new ArrayList<>();
-//        String orderUrl = String.format(env.getProperty("order_service.url"),userId);
-//        ResponseEntity<List<ResponseOrder>> orderResponse = restTemplate.exchange(orderUrl, HttpMethod.GET, null,
-//                new ParameterizedTypeReference<List<ResponseOrder>>() {
-//        });
-//        List<ResponseOrder> orderList = orderResponse.getBody();
 
-        //using Feign Client
-//        List<ResponseOrder> orderList = null;
-//        try {
-//            orderList = orderServiceClient.getOrders(userId);
-//        }catch (FeignException ex){
-//            log.error(ex.getMessage());
-//        }
-//        List<ResponseOrder> orderList = orderServiceClient.getOrders(userId);
         CircuitBreaker circuitBreaker = (CircuitBreaker) circuitBreakerFactory.create("circuitbreaker");
         List<ResponseOrder> orderList = circuitBreaker.run(() -> orderServiceClient.getOrders(userId),
                 throwable -> new ArrayList<>());

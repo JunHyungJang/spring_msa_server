@@ -14,5 +14,6 @@ public class KafkaConsumer {
     public void updateQty(ConsumerRecord<String, String> record) {
         log.info("MYSELF Kafka Message get  -> " + record.partition(),record.value());
 
+
     }
 }

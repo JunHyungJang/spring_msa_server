@@ -8,7 +8,7 @@ import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
 
 @Data
-public class RequestUser {
+public class    RequestUser {
 
 //    @NotNull(message = "Email can not be null");
 //    @Size(min = 2, message= "Email not be less than two characters");
