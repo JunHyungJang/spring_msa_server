@@ -16,6 +16,19 @@
 	<properties>
 		<java.version>17</java.version>
 		<spring-cloud.version>2023.0.0-RC1</spring-cloud.version>
+		<maven.compiler.source>17</maven.compiler.source>
+		<maven.compiler.target>17</maven.compiler.target>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<grpc.version>1.60.0</grpc.version>
+		<protoc.version>3.24.0</protoc.version>
+		<tomcat.annotations.version>6.0.53</tomcat.annotations.version>
+		<jackson.databind.version>2.14.2</jackson.databind.version>
+		<os.maven.plugin.version>1.7.1</os.maven.plugin.version>
+		<protobuf.maven.plugin.version>0.6.1</protobuf.maven.plugin.version>
+
+		<junit.version>5.10.1</junit.version>
+		<surefire.version>3.2.3</surefire.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -29,6 +42,21 @@
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>3.11.2</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.assertj</groupId>
+			<artifactId>assertj-core</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.h2database</groupId>
@@ -141,31 +169,41 @@
 
 		<!-- gRPC -->
 		<dependency>
-			<groupId>com.google.protobuf</groupId>
-			<artifactId>protobuf-java</artifactId>
-			<version>3.12.4</version>  <!--이 버전을 아래쪽 ptoroc버전과 맞춰야 함-->
-		</dependency>
-		<dependency>
 			<groupId>io.grpc</groupId>
 			<artifactId>grpc-netty-shaded</artifactId>
-			<version>1.37.0</version>
+			<version>${grpc.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.grpc</groupId>
 			<artifactId>grpc-protobuf</artifactId>
-			<version>1.37.0</version>
+			<version>${grpc.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.grpc</groupId>
 			<artifactId>grpc-stub</artifactId>
-			<version>1.37.0</version>
+			<version>${grpc.version}</version>
+		</dependency>
+		<dependency> <!-- necessary for Java 9+ -->
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>annotations-api</artifactId>
+			<version>${tomcat.annotations.version}</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>net.devh</groupId>
-			<artifactId>grpc-spring-boot-starter</artifactId>
-			<version>2.12.0.RELEASE</version>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-engine</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
 		</dependency>
-
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+		</dependency>
 
 		<!--		<dependency>-->
 <!--			<groupId>javax.annotation</groupId>-->
@@ -189,14 +227,46 @@
 	<build>
 		<extensions>
 			<extension>
-				<!-- Maven 빌드 과정 중에 운영 체제(OS)에 관한 정보를 제공하고 설정하는 데 도움을 줍니다. -->
 				<groupId>kr.motd.maven</groupId>
 				<artifactId>os-maven-plugin</artifactId>
-				<version>1.7.0</version>
+				<version>${os.maven.plugin.version}</version>
 			</extension>
 		</extensions>
-
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>17</source>
+					<target>17</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>${surefire.version}</version>
+			</plugin>
+			<plugin>
+				<groupId>org.xolstice.maven.plugins</groupId>
+				<artifactId>protobuf-maven-plugin</artifactId>
+				<version>${protobuf.maven.plugin.version}</version>
+				<configuration>
+					<protocArtifact>com.google.protobuf:protoc:${protoc.version}:exe:${os.detected.classifier}</protocArtifact>
+					<pluginId>grpc-java</pluginId>
+					<pluginArtifact>io.grpc:protoc-gen-grpc-java:${grpc.version}:exe:${os.detected.classifier}</pluginArtifact>
+					<protoSourceRoot>
+						${basedir}/src/main/proto/
+					</protoSourceRoot>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>compile</goal>
+							<goal>compile-custom</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
@@ -208,30 +278,6 @@
 						</exclude>
 					</excludes>
 				</configuration>
-			</plugin>
-
-			<plugin>
-				<groupId>org.xolstice.maven.plugins</groupId>
-				<artifactId>protobuf-maven-plugin</artifactId>
-				<version>0.6.1</version>
-				<configuration>
-					<protocArtifact>com.google.protobuf:protoc:3.12.4:exe:${os.detected.classifier}</protocArtifact>
-					<pluginId>grpc-java</pluginId>
-					<pluginArtifact>io.grpc:protoc-gen-grpc-java:1.51.0:exe:${os.detected.classifier}</pluginArtifact>
-					<outputBaseDirectory>src/main/java/</outputBaseDirectory>
-					<outputDirectory>src/main/java/</outputDirectory>
-					<clearOutputDirectory>false</clearOutputDirectory>
-				</configuration>
-				<executions>
-					<execution>
-						<goals>
-							<goal>compile</goal>
-							<goal>compile-custom</goal>
-						</goals>
-						<configuration>
-						</configuration>
-					</execution>
-				</executions>
 			</plugin>
 		</plugins>
 	</build>

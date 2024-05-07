@@ -27,21 +27,23 @@ public class OrderClientTest {
 
     @Test
     public void test(){
-        com.jun.models.OrderRequest orderRequest = com.jun.models.OrderRequest.newBuilder().setUserId("hi").build();
+        com.jun.models.OrderRequest orderRequest = com.jun.models.OrderRequest.newBuilder().setUserId("c8580b94-0df8-42f7-ab3f-562794bcecaa").build();
 //        this.blockingStub.getOrdersById(orderRequest)
         com.jun.models.OrderResponse orderResponse = this.blockingStub.getOrdersById(orderRequest);
 //        log.info(orderResponse.getOrderObjects(0));
-        com.jun.models.OrderObject firstOrderObject = orderResponse.getOrderObjectsList().get(0);
+//        com.jun.models.OrderObject firstOrderObject = orderResponse.getOrderObjectsList().get(0);
 
         // 가져온 값 로깅 또는 출력
-        log.info("First Order Object - ID: {}, Qty: {}, Unit Price: {}, Total Price: {}, UserID: {}, OrderID: {}",
-                firstOrderObject.getId(),
-                firstOrderObject.getQty(),
-                firstOrderObject.getUnitPrice(),
-                firstOrderObject.getTotalPrice(),
-                firstOrderObject.getUserId(),
-                firstOrderObject.getOrderId());
-//        d
+        for (com.jun.models.OrderObject orderObject : orderResponse.getOrderObjectsList()) {
+            log.info("Order Object - ID: {}, Qty: {}, Unit Price: {}, Total Price: {}, UserID: {}, OrderID: {}",
+                    orderObject.getId(),
+                    orderObject.getProductId(),
+                    orderObject.getQty(),
+                    orderObject.getUnitPrice(),
+                    orderObject.getTotalPrice(),
+                    orderObject.getUserId(),
+                    orderObject.getOrderId());
+        }
     }
 
 }

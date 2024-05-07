@@ -7,6 +7,8 @@ import com.example.userservice.jpa.UserEntity;
 import com.example.userservice.jpa.UserRepository;
 import com.example.userservice.vo.ResponseOrder;
 import feign.FeignException;
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -32,6 +34,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+
+
 @Service
 @Slf4j
 public class UserServiceImpl implements UserService {
@@ -43,6 +47,7 @@ public class UserServiceImpl implements UserService {
 
     RestTemplate restTemplate;
     OrderServiceClient orderServiceClient;
+    private com.jun.models.OrderServiceGrpcGrpc.OrderServiceGrpcBlockingStub blockingStub;
 
     CircuitBreakerFactory circuitBreakerFactory;
 
@@ -53,6 +58,10 @@ public class UserServiceImpl implements UserService {
         this.restTemplate = restTemplate;
         this.orderServiceClient = orderServiceClient;
         this.circuitBreakerFactory = circuitBreakerFactory;
+        ManagedChannel managedChannel = ManagedChannelBuilder.forAddress("localhost",8912)
+                .usePlaintext()
+                .build();
+        this.blockingStub = com.jun.models.OrderServiceGrpcGrpc.newBlockingStub(managedChannel);
     }
 
     @Override
@@ -73,7 +82,7 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public UserDto getUserbyId(String userId) {
+    public UserDto getUserbyId2(String userId) {
         UserEntity userEntity = userRepository.findByUserId(userId);
         if (userEntity == null) {
             log.info("NO user name");
@@ -83,10 +92,52 @@ public class UserServiceImpl implements UserService {
         CircuitBreaker circuitBreaker = (CircuitBreaker) circuitBreakerFactory.create("circuitbreaker");
         List<ResponseOrder> orderList = circuitBreaker.run(() -> orderServiceClient.getOrders(userId),
                 throwable -> new ArrayList<>());
-
+        com.jun.models.OrderRequest orderRequest = com.jun.models.OrderRequest.newBuilder().setUserId("c8580b94-0df8-42f7-ab3f-562794bcecaa").build();
+//        this.blockingStub.getOrdersById(orderRequest)
+//        com.jun.models.OrderResponse orderResponse = this.blockingStub.getOrdersById(orderRequest);
         userDto.setOrders(orderList);
         return userDto;
     }
+
+    @Override
+    public UserDto getUserbyId(String userId) {
+        UserEntity userEntity = userRepository.findByUserId(userId);
+        if (userEntity == null) {
+            log.info("NO user name");
+        }
+        UserDto userDto = new ModelMapper().map(userEntity, UserDto.class);
+
+        CircuitBreaker circuitBreaker = (CircuitBreaker) circuitBreakerFactory.create("circuitbreaker");
+        com.jun.models.OrderRequest orderRequest = com.jun.models.OrderRequest.newBuilder().setUserId(userId).build();
+        com.jun.models.OrderResponse orderResponse = this.blockingStub.getOrdersById(orderRequest);
+        List<ResponseOrder> orderList = new ArrayList<>();
+
+        for (com.jun.models.OrderObject orderObject : orderResponse.getOrderObjectsList()) {
+            ResponseOrder responseOrder = new ResponseOrder();
+//            long id = orderObject.getId();
+            responseOrder.setOrderId(String.valueOf(orderObject.getId()));
+            responseOrder.setQty((int) orderObject.getQty());
+            responseOrder.setUnitPrice(orderObject.getUnitPrice());
+            responseOrder.setTotalPrice(orderObject.getTotalPrice());
+            responseOrder.setProductId(orderObject.getProductId());
+            orderList.add(responseOrder);
+        }
+
+        userDto.setOrders(orderList);
+//        this.blockingStub.getOrdersById(orderRequest)
+//        com.jun.models.OrderResponse orderResponse = this.blockingStub.getOrdersById(orderRequest);
+//        userDto.setOrders(orderList);
+        return userDto;
+    }
+
+
+
+//    @Override
+//    public UserDto getUserById2(String userId) {
+//
+//
+//
+//    }
 
 
     @Override

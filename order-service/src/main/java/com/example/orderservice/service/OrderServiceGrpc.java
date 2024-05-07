@@ -11,35 +11,24 @@ import com.jun.models.OrderObject;
 
 import org.hibernate.query.Order;
 import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Service
 public class OrderServiceGrpc extends com.jun.models.OrderServiceGrpcGrpc.OrderServiceGrpcImplBase {
 
-//    OrderService orderService;
-//
-//    public OrderServiceGrpc( OrderService orderService) {
-//        this.orderService=orderService;
-//    }
+    OrderService orderService;
+
+    public OrderServiceGrpc(OrderService orderService) {
+        this.orderService=orderService;
+    }
     @Override
     public void getOrdersById(OrderRequest request, StreamObserver<OrderResponse> responseObserver) {
         String userId = request.getUserId();
-//        Iterable<OrderEntity> orderList = orderService.getOrdersByUserId(userId);
-        List<OrderEntity> orderList = new ArrayList<>();
-
-// 임시 OrderEntity 생성
-        OrderEntity order1 = new OrderEntity();
-        order1.setId(1L);
-        order1.setProductId("product1");
-        order1.setQty(2);
-        order1.setUnitPrice(100);
-        order1.setTotalPrice(200);
-        order1.setUserId("user1");
-        order1.setOrderId("order1");
-
-        orderList.add(order1);
-
+        Iterable<OrderEntity> orderList = orderService.getOrdersByUserId(userId);
+//        List<OrderEntity> orderList = new ArrayList<>();
 
 
         OrderResponse.Builder responseBuilder = OrderResponse.newBuilder();

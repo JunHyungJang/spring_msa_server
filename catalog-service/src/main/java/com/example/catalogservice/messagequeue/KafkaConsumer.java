@@ -28,13 +28,6 @@ public class KafkaConsumer {
     public void updateQty(String kafkaMessage) {
         log.info("Kafka Message -> " + kafkaMessage);
         Map<Object,Object> map = new HashMap<>();
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            map = mapper.readValue(kafkaMessage, new TypeReference<Map<Object, Object>>() {});
-        } catch (JsonProcessingException ex) {
-            ex.printStackTrace();
-        }
-
         CatalogEntity entity = repository.findByProductId((String)map.get("productId"));
         if (entity!=null) {
             entity.setStock(entity.getStock()-(Integer)map.get("qty"));

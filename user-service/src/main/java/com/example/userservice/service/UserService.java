@@ -10,6 +10,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 public interface UserService extends UserDetailsService {
     UserDto createUser(UserDto userDto);
     UserDto getUserbyId(String userId);
+    UserDto getUserbyId2(String userId);
+
     Iterable<UserEntity> getUserbyAll();
 
     String user_feign_test_impl();
