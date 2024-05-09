@@ -3,6 +3,7 @@ package com.example.userservice.controlller;
 
 import com.example.userservice.Dto.UserDto;
 import com.example.userservice.jpa.UserEntity;
+import com.example.userservice.service.UserServiceImpl;
 import com.example.userservice.vo.Greeting;
 import com.example.userservice.vo.RequestUser;
 import com.example.userservice.vo.ResponseUser;

@@ -4,6 +4,7 @@ import com.example.userservice.Dto.UserDto;
 import com.example.userservice.jpa.UserEntity;
 import com.example.userservice.jpa.UserRepository;
 import com.example.userservice.service.UserService;
+import com.example.userservice.vo.RequestUser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.discovery.converters.Auto;
 import org.h2.engine.User;
@@ -43,14 +44,15 @@ class UserServiceApplicationTests {
 	@Autowired
 	private MockMvc mockMvc;
 
-	@Mock
-	UserRepository userRepository;
+	private final ObjectMapper objectMapper = new ObjectMapper();
+//	@Mock
+//	UserRepository userRepository;
+////
+//	@Mock
+//	UserService userService;
 //
-	@Mock
-	UserService userService;
-
-	@Captor
-	ArgumentCaptor<UserEntity> userCaptor;
+//	@Captor
+//	ArgumentCaptor<UserEntity> userCaptor;
 	@Test
 	@DisplayName("Health check")
 	public void testStatus() throws Exception {
@@ -70,32 +72,18 @@ class UserServiceApplicationTests {
 	@Test
 	@DisplayName("craeteUser")
 	public void createUser() throws Exception {
-		UserEntity userEntity = new UserEntity();
-		userEntity.setName("Jun");
-		userEntity.setEmail("kevin0459@naver.com");
-		userEntity.setUserId("testUserId");
 
-
-		UserDto userdto = new UserDto();
-		userdto.setName("Jun");
-		userdto.setEmail("kevin0459@naver.com");
-		userdto.setUserId("testUserId");
-
-		when(userRepository.save(any(UserEntity.class))).thenReturn(userEntity);
-		ObjectMapper objectMapper = new ObjectMapper();
-		String jsonContent = objectMapper.writeValueAsString(userdto);
-
+		RequestUser requestUser = RequestUser
+				.builder()
+				.email("kevin0459@naver.com")
+				.name("jun")
+				.pwd("12345678")
+				.build();
 
 		mockMvc.perform(post("/users")
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(jsonContent))
-				.andDo(print());
-		verify(userRepository).save(any(UserEntity.class));
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(requestUser)))
+				.andExpect(status().isCreated());
 
-//dd?/
 	}
-//	@Test
-//	void contextLoads() {
-//	}
-
 }

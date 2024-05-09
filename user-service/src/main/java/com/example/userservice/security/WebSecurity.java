@@ -62,13 +62,6 @@ public class WebSecurity {
                 })
                 .addFilter(getAuthenticationFilter(authenticationConfiguration))
                 .headers(header-> header.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin));
-//        http.authorizeHttpRequests(
-//                        request -> request.
-//                                requestMatchers(PathRequest.toH2Console()).permitAll()
-//
-//                                .anyRequest().authenticated())
-//                .csrf(csrf -> csrf.ignoringRequestMatchers(PathRequest.toH2Console()))
-//                .headers(header -> header.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin));
         return http.build();
     }
 
